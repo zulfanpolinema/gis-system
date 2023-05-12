@@ -304,7 +304,7 @@ return [
             'text' => 'Data Panen',
             'route' => 'harvests.index',
             'icon' => 'fas fa-fw fa-leaf',
-            'can' => 'manage harvest',
+            'can' => 'manage harvests',
         ],
         [
             'text' => 'Kategori Panen',
