@@ -38,7 +38,7 @@ Route::middleware('role:Admin')->group(function () {
     });
 });
 
-Route::middleware('permission:manage harvest')->group(function () {
+Route::middleware('permission:manage harvests')->group(function () {
     Route::resource('harvests', HarvestController::class);
 });
 
