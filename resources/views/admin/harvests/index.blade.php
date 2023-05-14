@@ -19,7 +19,9 @@
     <div class="card">
         <div class="card-header d-flex align-items-center">
             <div class="ml-auto">
-                <a href="{{ route('harvests.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Data Panen</a>
+                @hasanyrole(['Admin', 'Petani'])
+                    <a href="{{ route('harvests.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Data Panen</a>
+                @endhasanyrole
             </div>
         </div>
         <div class="card-body">

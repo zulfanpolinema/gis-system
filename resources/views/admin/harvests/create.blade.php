@@ -3,8 +3,6 @@
 @section('content_header')
     <h1 class="m-0 text-dark">Buat Data Panen</h1>
 @endsection
-@section('plugins.Datatables', true)
-
 @section('content')
     <div class="card">
         <form id="addHarvestForm">
@@ -16,7 +14,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    @if (Auth::user()->hasRole('Admin'))
+                    @hasrole('Admin')
                         <div class="col-xl-6">
                             <div class="form-group">
                                 <label for="user_id" class="form-label" required>Nama Pemilik</label>
@@ -24,7 +22,7 @@
                                 </select>
                             </div>
                         </div>
-                    @endif
+                    @endhasrole
                     <div class="col-xl-6">
                         <div class="form-group">
                             <label for="category_id" class="form-label">Kategori</label>
@@ -98,10 +96,17 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col">
+                        <div id="map" style="height: 500px;"></div>
+                        <input type="hidden" name="latitude" id="latitude">
+                        <input type="hidden" name="longitude" id="longitude">
+                    </div>
+                </div>
             </div>
             <div class="card-footer">
                 <div class="d-flex justify-content-end">
-                    <x-adminlte-button label="Simpan" theme="primary" icon="fas fa-save" type="submit" />
+                    <x-adminlte-button label="Simpan" theme="primary" icon="fas fa-save" type="submit" id="btnSubmit"/>
                 </div>
             </div>
         </form>
@@ -109,6 +114,33 @@
 @endsection
 
 @section('js')
+    <script>
+        var map, marker;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: {
+                    lat: -7.968376,
+                    lng: 112.632354
+                },
+                mapTypeId: 'hybrid',
+                streetViewControl: false,
+            });
+
+            marker = new google.maps.Marker({
+                position: new google.maps.LatLng(-7.968376, 112.632354),
+                map: map,
+                draggable: true,
+            });
+
+            google.maps.event.addListener(marker, 'dragend', function() {
+                $('#latitude').val(marker.getPosition().lat());
+                $('#longitude').val(marker.getPosition().lng());
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWDH7OEaIYZuJOD5dsXGerjcPf7IHCnGg&callback=initMap" defer type="text/javascript"></script>
     @if (Auth::user()->hasRole('Admin'))
         <script>
             $('#user_id').select2({
@@ -213,6 +245,56 @@
                 width: '100%',
                 theme: "classic",
             });
+        });
+
+        $('#village_id').on('change', async function() {
+            var village_id = $(this).val();
+            $.ajax({
+                url: "{{ route('harvests.create') }}",
+                type: 'GET',
+                dataType: 'JSON',
+                data: $.param({
+                    village_id: village_id,
+                }),
+                success: function(data) {
+                    if (data.meta.lat != "NULL" || data.meta.long != "NULL") {
+                        map.setCenter(new google.maps.LatLng(data.meta.lat, data.meta.long));
+                        marker.setPosition(new google.maps.LatLng(data.meta.lat, data.meta.long));
+                        $('#latitude').val(data.meta.lat);
+                        $('#longitude').val(data.meta.long);
+                    } else {
+                        toastr.warning("Data posisi tidak ditemukan, silahkan pilih secara manual!", 'Warning');
+                    }
+
+                },
+                error: function(data) {
+                    toastr.error(data.responseJSON.message, 'Error');
+                },
+            });
+        });
+
+        $('#addHarvestForm').on('submit', function (e) {
+            e.preventDefault();
+            $('#btnSubmit').attr('disabled', true);
+            $.ajax({
+                url: "{{ route('harvests.store') }}",
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "POST",
+                dataType: "JSON",
+                processData: false,
+                contentType: false,
+                cache: false,
+                data: new FormData(this),
+                error: function(data) {
+                    toastr.error(data.responseJSON.message, 'Error');
+                },
+                success: function(data) {
+                    window.location.assign(data.message);
+                }
+            });
+            $('#btnSubmit').removeAttr('disabled');
         });
     </script>
 @endsection
