@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 class HarvestController extends Controller
@@ -24,8 +25,8 @@ class HarvestController extends Controller
                 ->addColumn('gambar', function ($item) {
                     $images = '';
                     foreach ($item->images as $key => $image) {
-                        $images .= '<div class="carousel-item '. ($key == 0 ? "active" : "") .'">
-                                        <img class="d-block w-75 h-75 mx-auto" src="' . $image->pict . '" alt="'. $item->id .' slide">
+                        $images .= '<div class="carousel-item ' . ($key == 0 ? "active" : "") . '">
+                                        <img class="d-block w-75 h-75 mx-auto" src="' . $image->pict . '" alt="' . $item->id . ' slide">
                                     </div>';
                     }
                     return $images != '' ? '<div id="carousel-' . $item->id . '" class="carousel slide" data-ride="carousel">
@@ -40,7 +41,7 @@ class HarvestController extends Controller
                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                     <span class="sr-only">Next</span>
                                 </a>
-                            </div>': 'Tidak ada gambar';
+                            </div>' : 'Tidak ada gambar';
                 })
                 ->addColumn('pemilik', function ($item) {
                     return $item->user->name;
@@ -58,10 +59,20 @@ class HarvestController extends Controller
                     return 'lat: ' . $item->latitude . ', long:' . $item->longitude;
                 })
                 ->editColumn('status', function ($item) {
-                    return '-';
+                    return config('data.harvest_status')[$item->status]['badge'];
                 })
-                ->addColumn('actions', function () {
-                    return '-';
+                ->addColumn('actions', function ($item) {
+                    return
+                        '
+                            <nobr>
+                            <button class="btn btn-xs btn-default text-primary mx-1 shadow" title="Edit" id="editButton" data-id="' . $item->id . '" data-toggle="modal" data-target="#editKategoriModal">
+                                <i class="fa fa-lg fa-fw fa-pen"></i>
+                            </button>
+                            <button class="btn btn-xs btn-default text-danger mx-1 shadow" title="Delete" id="deleteButton" data-id="' . $item->id . '">
+                                <i class="fa fa-lg fa-fw fa-trash"></i>
+                            </button>
+                            </nobr>
+                        ';
                 })
                 ->rawColumns(['gambar', 'status', 'actions'])
                 ->addIndexColumn()
@@ -142,9 +153,24 @@ class HarvestController extends Controller
 
     public function update(Request $request, Harvest $harvest)
     {
+        //
     }
 
-    public function destroy(Harvest $harvest)
+    public function destroy($id)
     {
+        DB::beginTransaction();
+        try {
+            $harvest = Harvest::findOrFail($id);
+            foreach ($harvest->images as $image) {
+                Storage::disk('public')->delete($image->path);
+                $image->delete();
+            }
+            $harvest->delete();
+            DB::commit();
+            return response()->json(['message' => 'Data berhasil dihapus!'], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
     }
 }

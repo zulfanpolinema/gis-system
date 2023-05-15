@@ -12,9 +12,14 @@
         'processing' => true,
         'ajax' => ['url' => route('harvests.index')],
         'order' => [[0, 'asc']],
-        'columns' => [['data' => 'DT_RowIndex'], ['data' => 'gambar'], ['data' => 'pemilik'], ['data' => 'total'], ['data' => 'price'], ['data' => 'address'], ['data' => 'coordinate'], ['data' => 'status'], ['data' => 'actions']],
+        'columns' => [['data' => 'DT_RowIndex'], ['data' => 'gambar', 'orderable' => false, 'searchable' => false], ['data' => 'pemilik'], ['data' => 'total'], ['data' => 'price'], ['data' => 'address', 'orderable' => false], ['data' => 'coordinate', 'orderable' => false], ['data' => 'status'], ['data' => 'actions', 'orderable' => false, 'searchable' => false, 'visible' => true]],
     ];
 @endphp
+@hasrole('Pengepul')
+    @php
+        $config['columns'][8]['visible'] = false;
+    @endphp
+@endhasrole
 @section('content')
     <div class="card">
         <div class="card-header d-flex align-items-center">

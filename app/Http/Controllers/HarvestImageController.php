@@ -25,10 +25,10 @@ class HarvestImageController extends Controller
             if ($file) {
                 $name = uniqid() . '_' . trim($file->getClientOriginalName());
 
-                $file->storeAs('harvests', $name, 'public');
+                $file_path = $file->storeAs('harvests', $name, 'public');
 
                 return response()->json([
-                    'name'          => $name,
+                    'name'          => $file_path,
                     'original_name' => $file->getClientOriginalName(),
                 ]);
             }
@@ -37,46 +37,21 @@ class HarvestImageController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\HarvestImage  $harvestImage
-     * @return \Illuminate\Http\Response
-     */
     public function show(HarvestImage $harvestImage)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\HarvestImage  $harvestImage
-     * @return \Illuminate\Http\Response
-     */
     public function edit(HarvestImage $harvestImage)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\HarvestImage  $harvestImage
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, HarvestImage $harvestImage)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\HarvestImage  $harvestImage
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(HarvestImage $harvestImage)
     {
         //

@@ -21,6 +21,6 @@ class HarvestImage extends Model
 
     public function getPictAttribute()
     {
-        return asset('storage/harvests/' . $this->path);
+        return asset('storage/' . $this->path);
     }
 }
