@@ -25,7 +25,7 @@ class HarvestController extends Controller
                     $images = '';
                     foreach ($item->images as $key => $image) {
                         $images .= '<div class="carousel-item '. ($key == 0 ? "active" : "") .'">
-                                        <img class="d-block w-50 h-50 mx-auto" src="' . $image->pict . '" alt="'. $item->id .' slide">
+                                        <img class="d-block w-75 h-75 mx-auto" src="' . $image->pict . '" alt="'. $item->id .' slide">
                                     </div>';
                     }
                     return $images != '' ? '<div id="carousel-' . $item->id . '" class="carousel slide" data-ride="carousel">
