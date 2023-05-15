@@ -15,6 +15,9 @@ return new class extends Migration
     {
         Schema::create('harvest_images', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('harvest_id');
+            $table->foreign('harvest_id')->references('id')->on('harvests')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('path');
             $table->timestamps();
         });
     }

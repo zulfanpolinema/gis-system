@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DropdownController;
 use App\Http\Controllers\HarvestController;
+use App\Http\Controllers\HarvestImageController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
@@ -40,6 +41,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::resource('harvests', HarvestController::class);
+    Route::resource('harvests/images', HarvestImageController::class);
 });
 
 

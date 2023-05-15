@@ -13,7 +13,7 @@ class HarvestController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:Admin|Petani', ['except' => ['index','show']]);
+        $this->middleware('role:Admin|Petani', ['except' => ['index', 'show']]);
     }
 
     public function index()
@@ -22,7 +22,25 @@ class HarvestController extends Controller
             $harvests = Harvest::with('user')->get();
             return DataTables::of($harvests)
                 ->addColumn('gambar', function ($item) {
-                    return '-';
+                    $images = '';
+                    foreach ($item->images as $key => $image) {
+                        $images .= '<div class="carousel-item '. ($key == 0 ? "active" : "") .'">
+                                        <img class="d-block w-50 h-50 mx-auto" src="' . $image->pict . '" alt="'. $item->id .' slide">
+                                    </div>';
+                    }
+                    return $images != '' ? '<div id="carousel-' . $item->id . '" class="carousel slide" data-ride="carousel">
+                                <div class="carousel-inner">' .
+                        $images
+                        . '</div>
+                                <a class="carousel-control-prev" href="#carousel-' . $item->id . '" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#carousel-' . $item->id . '" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>': 'Tidak ada gambar';
                 })
                 ->addColumn('pemilik', function ($item) {
                     return $item->user->name;
@@ -42,7 +60,7 @@ class HarvestController extends Controller
                 ->editColumn('status', function ($item) {
                     return '-';
                 })
-                ->addColumn('actions', function() {
+                ->addColumn('actions', function () {
                     return '-';
                 })
                 ->rawColumns(['gambar', 'status', 'actions'])
@@ -76,7 +94,6 @@ class HarvestController extends Controller
             if (Auth::user()->hasRole('Admin')) {
                 $request->validate(['user_id' => 'required']);
             }
-
             $request->validate([
                 'category_id'   => 'required',
                 'village_id'    => 'required',
@@ -87,7 +104,7 @@ class HarvestController extends Controller
                 'longitude'     => 'required',
             ]);
 
-            Harvest::create([
+            $harvest = Harvest::create([
                 'user_id'   => $request->user_id ?? Auth::user()->id,
                 'category_id'   => $request->category_id,
                 'indonesia_village_id'  => $request->village_id,
@@ -98,6 +115,12 @@ class HarvestController extends Controller
                 'latitude'  => $request->latitude,
                 'status'    => 1,
             ]);
+
+            foreach ($request->input('gambar', []) as $path) {
+                $harvest->images()->create([
+                    'path' => $path
+                ]);
+            }
 
             DB::commit();
             Session::flash('success', 'Data berhasil disimpan!');
