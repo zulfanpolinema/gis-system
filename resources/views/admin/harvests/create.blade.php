@@ -16,19 +16,13 @@
                 <div class="row">
                     @hasrole('Admin')
                         <div class="col-xl-6">
-                            <div class="form-group">
-                                <label for="user_id" class="form-label" required>Nama Pemilik</label>
-                                <select name="user_id" id="user_id" class="form-control">
-                                </select>
-                            </div>
+                            <x-adminlte-select2 name="user_id" label="User" data-placeholder="Pilih user">
+                            </x-adminlte-select2>
                         </div>
                     @endhasrole
                     <div class="col-xl-6">
-                        <div class="form-group">
-                            <label for="category_id" class="form-label">Kategori</label>
-                            <select name="category_id" id="category_id" class="form-control" required>
-                            </select>
-                        </div>
+                        <x-adminlte-select2 name="category_id" label="Kategori" data-placeholder="Pilih kategori">
+                        </x-adminlte-select2>
                     </div>
                 </div>
                 <div class="row">
@@ -63,37 +57,23 @@
                 </div>
                 <div class="row">
                     <div class="col-xl-6">
-                        <div class="form-group">
-                            <label for="province_id" class="form-label">Provinsi</label>
-                            <select name="province_id" id="province_id" class="form-control" required>
-                            </select>
-                        </div>
+                        <x-adminlte-select2 name="province_id" label="Provinsi" data-placeholder="Pilih provinsi">
+                        </x-adminlte-select2>
                     </div>
                     <div class="col-xl-6">
-                        <div class="form-group">
-                            <label for="city_id" class="form-label">Kota</label>
-                            <select name="city_id" id="city_id" class="form-control" required>
-                                <option value="" selected disabled>Pilih provinsi terlebih dahulu!</option>
-                            </select>
-                        </div>
+                        <x-adminlte-select2 name="city_id" label="Kota" data-placeholder="Pilih provinsi terlebih dahulu!">
+                            <option value=""></option>
+                        </x-adminlte-select2>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xl-6">
-                        <div class="form-group">
-                            <label for="subdistrict_id" class="form-label">Kecamatan</label>
-                            <select name="subdistrict_id" id="subdistrict_id" class="form-control" required>
-                                <option value="" selected disabled>Pilih kota terlebih dahulu!</option>
-                            </select>
-                        </div>
+                        <x-adminlte-select2 name="subdistrict_id" label="Kecamatan" data-placeholder="Pilih kota terlebih dahulu!">
+                        </x-adminlte-select2>
                     </div>
                     <div class="col-xl-6">
-                        <div class="form-group">
-                            <label for="village_id" class="form-label">Kelurahan</label>
-                            <select name="village_id" id="village_id" class="form-control" required>
-                                <option value="" selected disabled>Pilih kecamatan terlebih dahulu!</option>
-                            </select>
-                        </div>
+                        <x-adminlte-select2 name="village_id" label="Kelurahan" data-placeholder="Pilih kecamatan terlebih dahulu!">
+                        </x-adminlte-select2>
                     </div>
                 </div>
                 <div class="row">
@@ -106,7 +86,7 @@
             </div>
             <div class="card-footer">
                 <div class="d-flex justify-content-end">
-                    <x-adminlte-button label="Simpan" theme="primary" icon="fas fa-save" type="submit" id="btnSubmit"/>
+                    <x-adminlte-button label="Simpan" theme="primary" icon="fas fa-save" type="submit" id="btnSubmit" />
                 </div>
             </div>
         </form>
@@ -141,11 +121,36 @@
         }
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWDH7OEaIYZuJOD5dsXGerjcPf7IHCnGg&callback=initMap" defer type="text/javascript"></script>
-    @if (Auth::user()->hasRole('Admin'))
+    @hasrole('Admin')
         <script>
-            $('#user_id').select2({
+            $(function() {
+                $('#user_id').select2({
+                    ajax: {
+                        url: "{{ route('dropdown.farmers') }}",
+                        data: function(params) {
+                            return {
+                                search: params.term,
+                                type: 'public',
+                            }
+                        },
+                    },
+                    width: '100%',
+                    theme: 'bootstrap4',
+                });
+            });
+        </script>
+    @endhasrole
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
+    <script>
+        var im = new Inputmask({
+            alias: 'numeric',
+            allowMinus: false,
+        });
+        $(function() {
+            im.mask('#price,#total');
+            $('#category_id').select2({
                 ajax: {
-                    url: "{{ route('dropdown.farmers') }}",
+                    url: "{{ route('dropdown.categories') }}",
                     data: function(params) {
                         return {
                             search: params.term,
@@ -153,45 +158,33 @@
                         }
                     },
                 },
-                placeholder: "Pilih Pemilik",
+                placeholder: "Pilih Kategori",
                 width: '100%',
-                theme: "classic",
+                theme: 'bootstrap4',
+                delay: 250,
             });
-        </script>
-    @endif
-    <script>
-        $('#category_id').select2({
-            ajax: {
-                url: "{{ route('dropdown.categories') }}",
-                data: function(params) {
-                    return {
-                        search: params.term,
-                        type: 'public',
-                    }
-                },
-            },
-            placeholder: "Pilih Kategori",
-            width: '100%',
-            theme: "classic",
-        });
 
-        $('#province_id').select2({
-            ajax: {
-                url: "{{ route('dropdown.provinces') }}",
-                data: function(params) {
-                    return {
-                        search: params.term,
-                        type: 'public',
-                    }
+            $('#province_id').select2({
+                ajax: {
+                    url: "{{ route('dropdown.provinces') }}",
+                    data: function(params) {
+                        return {
+                            search: params.term,
+                            type: 'public',
+                        }
+                    },
                 },
-            },
-            placeholder: "Pilih Provinsi",
-            width: '100%',
-            theme: "classic",
-        });
+                placeholder: "Pilih Provinsi",
+                width: '100%',
+                theme: 'bootstrap4',
+                delay: 250,
+            });
+        })
+
 
         $('#province_id').on('change', function() {
             var province_id = $(this).val();
+            $('#city_id').data('placeholder', 'Pilih Kota');
             $('#city_id').select2({
                 ajax: {
                     url: "{{ route('dropdown.cities') }}",
@@ -203,14 +196,15 @@
                         }
                     },
                 },
-                placeholder: "Pilih Kota",
                 width: '100%',
-                theme: "classic",
+                theme: 'bootstrap4',
+                delay: 250,
             });
         });
 
         $('#city_id').on('change', function() {
             var city_id = $(this).val();
+            $('#subdistrict_id').data('placeholder', 'Pilih Kecamatan');
             $('#subdistrict_id').select2({
                 ajax: {
                     url: "{{ route('dropdown.subdistricts') }}",
@@ -222,13 +216,14 @@
                         }
                     },
                 },
-                placeholder: "Pilih Kecamatan",
                 width: '100%',
-                theme: "classic",
+                theme: 'bootstrap4',
+                delay: 250,
             });
         });
 
         $('#subdistrict_id').on('change', function() {
+            $('#village_id').data('placeholder', 'Pilih Kelurahan');
             var subdistrict_id = $(this).val();
             $('#village_id').select2({
                 ajax: {
@@ -241,9 +236,9 @@
                         }
                     },
                 },
-                placeholder: "Pilih Kelurahan",
                 width: '100%',
-                theme: "classic",
+                theme: 'bootstrap4',
+                delay: 250,
             });
         });
 
@@ -273,7 +268,7 @@
             });
         });
 
-        $('#addHarvestForm').on('submit', function (e) {
+        $('#addHarvestForm').on('submit', function(e) {
             e.preventDefault();
             $('#btnSubmit').attr('disabled', true);
             $.ajax({

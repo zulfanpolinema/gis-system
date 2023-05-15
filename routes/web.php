@@ -25,22 +25,23 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::middleware('auth')->group(function () {
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::middleware('role:Admin')->group(function () {
-    Route::resource('users', UserController::class);
-    Route::resource('roles', RoleController::class);
-    Route::resource('categories', CategoryController::class);
+    Route::middleware('role:Admin')->group(function () {
+        Route::resource('users', UserController::class);
+        Route::resource('roles', RoleController::class);
+        Route::resource('categories', CategoryController::class);
 
-    Route::prefix('dropdown')->controller(DropdownController::class)->as('dropdown.')->group(function () {
-        Route::get('roles', 'getRoles')->name('roles');
-        Route::get('farmers', 'getFarmers')->name('farmers');
+        Route::prefix('dropdown')->controller(DropdownController::class)->as('dropdown.')->group(function () {
+            Route::get('roles', 'getRoles')->name('roles');
+            Route::get('farmers', 'getFarmers')->name('farmers');
+        });
     });
-});
 
-Route::middleware('permission:manage harvests')->group(function () {
     Route::resource('harvests', HarvestController::class);
 });
+
 
 Route::prefix('dropdown')->controller(DropdownController::class)->as('dropdown.')->group(function () {
     Route::get('categories', 'getCategories')->name('categories');

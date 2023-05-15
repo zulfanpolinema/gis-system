@@ -6,6 +6,10 @@ use App\Models\Category;
 use App\Models\FinanceType;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Laravolt\Indonesia\Models\City;
+use Laravolt\Indonesia\Models\District;
+use Laravolt\Indonesia\Models\Province;
+use Laravolt\Indonesia\Models\Village;
 use Spatie\Permission\Models\Role;
 
 class DropdownController extends Controller
@@ -47,58 +51,61 @@ class DropdownController extends Controller
 
     public function getProvinces()
     {
-        $provinces = \Indonesia::allProvinces();
+        $provinces = Province::select('code', 'name')
+            ->where([
+                ['name', 'like', '%' . request()->input('search', '') . '%']
+            ])->get();
         $data = [];
         foreach ($provinces as $province) {
             $data[] = [
-                'id'    => $province->id,
+                'id'    => $province->code,
                 'text'  => ucwords(strtolower($province->name)),
             ];
         }
         return response()->json(['results' => $data]);
     }
 
-    public function getCities(Request $request)
+    public function getCities()
     {
-        if ($request->province_id) {
-            $cities = \Indonesia::findProvince($request->province_id, ['cities'])->cities;
-        } else {
-            $cities = \Indonesia::allCities();
-        }
+        $cities = City::select('code', 'name')
+            ->where([
+                ['province_code', request()->input('province_id', '')],
+                ['name', 'like', '%' . request()->input('search', '') . '%']
+            ])->get();
         $data = [];
         foreach ($cities as $city) {
             $data[] = [
-                'id'    => $city->id,
+                'id'    => $city->code,
                 'text'  => ucwords(strtolower($city->name)),
             ];
         }
         return response()->json(['results' => $data]);
     }
 
-    public function getSubdistricts(Request $request)
+    public function getSubdistricts()
     {
-        if ($request->city_id) {
-            $districts = \Indonesia::findCity($request->city_id, ['districts'])->districts;
-        } else {
-            $districts = \Indonesia::allDistricts();
-        }
+        $districts = District::select('code', 'name')
+            ->where([
+                ['city_code', request()->input('city_id', '')],
+                ['name', 'like', '%' . request()->input('search', '') . '%']
+            ])->get();
         $data = [];
         foreach ($districts as $district) {
             $data[] = [
-                'id'    => $district->id,
+                'id'    => $district->code,
                 'text'  => ucwords(strtolower($district->name)),
             ];
         }
         return response()->json(['results' => $data]);
     }
 
-    public function getVillages(Request $request)
+    public function getVillages()
     {
-        if ($request->subdistrict_id) {
-            $villages = \Indonesia::findDistrict($request->subdistrict_id, ['villages'])->villages;
-        } else {
-            $villages = \Indonesia::allVillages();
-        }
+        $villages = Village::select('id', 'name')
+            ->where([
+                ['district_code', request()->input('subdistrict_id', '')],
+                ['name', 'like', '%' . request()->input('search', '') . '%']
+            ])->get();
         $data = [];
         foreach ($villages as $village) {
             $data[] = [

@@ -18,6 +18,7 @@ class Harvest extends Model
         'address',
         'longitude',
         'latitude',
+        'status',
     ];
 
     public function user() {

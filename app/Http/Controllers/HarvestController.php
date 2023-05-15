@@ -11,6 +11,11 @@ use Yajra\DataTables\Facades\DataTables;
 
 class HarvestController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('role:Admin|Petani', ['except' => ['index','show']]);
+    }
+
     public function index()
     {
         if (request()->ajax()) {
@@ -37,6 +42,10 @@ class HarvestController extends Controller
                 ->editColumn('status', function ($item) {
                     return '-';
                 })
+                ->addColumn('actions', function() {
+                    return '-';
+                })
+                ->rawColumns(['gambar', 'status', 'actions'])
                 ->addIndexColumn()
                 ->make();
         }
@@ -45,6 +54,7 @@ class HarvestController extends Controller
 
     public function create(Request $request)
     {
+        $this->middleware('role:Admin|Petani');
         if (request()->ajax()) {
             try {
                 if ($request->village_id) {
@@ -60,6 +70,7 @@ class HarvestController extends Controller
 
     public function store(Request $request)
     {
+        $this->middleware('role:Admin|Petani');
         DB::beginTransaction();
         try {
             if (Auth::user()->hasRole('Admin')) {
@@ -97,48 +108,20 @@ class HarvestController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Harvest  $harvest
-     * @return \Illuminate\Http\Response
-     */
     public function show(Harvest $harvest)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Harvest  $harvest
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Harvest $harvest)
     {
-        //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Harvest  $harvest
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Harvest $harvest)
     {
-        //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Harvest  $harvest
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Harvest $harvest)
     {
-        //
     }
 }
