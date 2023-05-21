@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Laravolt\Indonesia\Models\Village;
 use Yajra\DataTables\Facades\DataTables;
 
 class HarvestController extends Controller
@@ -56,7 +57,7 @@ class HarvestController extends Controller
                     return $item->full_address;
                 })
                 ->addColumn('coordinate', function ($item) {
-                    return 'lat: ' . $item->latitude . ', long:' . $item->longitude;
+                    return $item->latitude . ', ' . $item->longitude;
                 })
                 ->editColumn('status', function ($item) {
                     return config('data.harvest_status')[$item->status]['badge'];
@@ -65,9 +66,12 @@ class HarvestController extends Controller
                     return
                         '
                             <nobr>
-                            <button class="btn btn-xs btn-default text-primary mx-1 shadow" title="Edit" id="editButton" data-id="' . $item->id . '" data-toggle="modal" data-target="#editKategoriModal">
+                            <a href="'. route('harvests.show', $item->id) .'" class="btn btn-xs btn-default text-info mx-1 shadow" title="Edit">
+                                <i class="fa fa-lg fa-fw fa-eye"></i>
+                            </a>
+                            <a href="'. route('harvests.edit', $item->id) .'" class="btn btn-xs btn-default text-primary mx-1 shadow" title="Edit">
                                 <i class="fa fa-lg fa-fw fa-pen"></i>
-                            </button>
+                            </a>
                             <button class="btn btn-xs btn-default text-danger mx-1 shadow" title="Delete" id="deleteButton" data-id="' . $item->id . '">
                                 <i class="fa fa-lg fa-fw fa-trash"></i>
                             </button>
@@ -83,11 +87,10 @@ class HarvestController extends Controller
 
     public function create(Request $request)
     {
-        $this->middleware('role:Admin|Petani');
         if (request()->ajax()) {
             try {
                 if ($request->village_id) {
-                    $village = \Indonesia::findVillage($request->village_id);
+                    $village = Village::find($request->village_id);
                     return response()->json($village, 200);
                 }
             } catch (\Throwable $th) {
@@ -147,8 +150,10 @@ class HarvestController extends Controller
         //
     }
 
-    public function edit(Harvest $harvest)
+    public function edit($id)
     {
+        $harvest = Harvest::find($id);
+        return view('admin.harvests.create', compact('harvest'));
     }
 
     public function update(Request $request, Harvest $harvest)

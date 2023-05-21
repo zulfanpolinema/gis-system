@@ -1,7 +1,7 @@
 @extends('adminlte::page')
 @section('title', 'Data Panen')
 @section('content_header')
-    <h1 class="m-0 text-dark">Buat Data Panen</h1>
+    <h1 class="m-0 text-dark">{{ Route::is('harvests.create') ? 'Buat Data Panen' : 'Edit data panen' }}</h1>
 @endsection
 @section('content')
     <div class="card">
@@ -17,17 +17,23 @@
                     @hasrole('Admin')
                         <div class="col-xl-6">
                             <x-adminlte-select2 name="user_id" label="User" data-placeholder="Pilih user">
+                                @if (Route::is('harvests.edit'))
+                                    <option value="{{ $harvest->user_id }}" selected>{{ $harvest->user->name }}</option>
+                                @endif
                             </x-adminlte-select2>
                         </div>
                     @endhasrole
                     <div class="col-xl-6">
                         <x-adminlte-select2 name="category_id" label="Kategori" data-placeholder="Pilih kategori">
+                            @if (Route::is('harvests.edit'))
+                                <option value="{{ $harvest->category_id }}" selected>{{ $harvest->category->name }}</option>
+                            @endif
                         </x-adminlte-select2>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xl-6">
-                        <x-adminlte-input name="total" label="Total Panen" placeholder="Jumlah total panen" required>
+                        <x-adminlte-input name="total" label="Total Panen" placeholder="Jumlah total panen" value="{{ $harvest->total ?? '' }}" required>
                             <x-slot name="appendSlot">
                                 <div class="input-group-text">
                                     Kg
@@ -36,7 +42,7 @@
                         </x-adminlte-input>
                     </div>
                     <div class="col-xl-6">
-                        <x-adminlte-input name="price" label="Harga per Kg" placeholder="Harga per kg" required>
+                        <x-adminlte-input name="price" label="Harga per Kg" placeholder="Harga per kg" value="{{ $harvest->price ?? '' }}" required>
                             <x-slot name="prependSlot">
                                 <div class="input-group-text">
                                     Rp
@@ -52,35 +58,48 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <x-adminlte-textarea label="Alamat" name="address" placeholder="Masukkan alamat" />
+                        <x-adminlte-textarea label="Alamat" name="address" placeholder="Masukkan alamat" required >
+                            {{ $harvest->address ?? '' }}
+                        </x-adminlte-textarea>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xl-6">
-                        <x-adminlte-select2 name="province_id" label="Provinsi" data-placeholder="Pilih provinsi">
+                        <x-adminlte-select2 name="province_id" label="Provinsi" data-placeholder="Pilih provinsi" required>
+                            @if (Route::is('harvests.edit'))
+                                <option value="{{ $harvest->village->district->city->province->id }}" selected>{{ ucwords(strtolower($harvest->village->province_name)) }}</option>
+                            @endif
                         </x-adminlte-select2>
                     </div>
                     <div class="col-xl-6">
-                        <x-adminlte-select2 name="city_id" label="Kota" data-placeholder="Pilih provinsi terlebih dahulu!">
-                            <option value=""></option>
+                        <x-adminlte-select2 name="city_id" label="Kota" data-placeholder="Pilih provinsi terlebih dahulu!" required>
+                            @if (Route::is('harvests.edit'))
+                                <option value="{{ $harvest->village->district->city->id }}" selected>{{ ucwords(strtolower($harvest->village->city_name)) }}</option>
+                            @endif
                         </x-adminlte-select2>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xl-6">
                         <x-adminlte-select2 name="subdistrict_id" label="Kecamatan" data-placeholder="Pilih kota terlebih dahulu!">
+                            @if (Route::is('harvests.edit'))
+                                <option value="{{ $harvest->village->district->id }}" selected>{{ ucwords(strtolower($harvest->village->district_name)) }}</option>
+                            @endif
                         </x-adminlte-select2>
                     </div>
                     <div class="col-xl-6">
                         <x-adminlte-select2 name="village_id" label="Kelurahan" data-placeholder="Pilih kecamatan terlebih dahulu!">
+                            @if (Route::is('harvests.edit'))
+                                <option value="{{ $harvest->village->id }}" selected>{{ ucwords(strtolower($harvest->village->name)) }}</option>
+                            @endif
                         </x-adminlte-select2>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
                         <div id="map" style="height: 500px;" class="my-3"></div>
-                        <input type="hidden" name="latitude" id="latitude">
-                        <input type="hidden" name="longitude" id="longitude">
+                        <input type="hidden" name="latitude" id="latitude" value="{{ $harvest->latitude ?? '' }}">
+                        <input type="hidden" name="longitude" id="longitude" value="{{ $harvest->longitude ?? '' }}">
                     </div>
                 </div>
                 <div class="row">
@@ -161,20 +180,22 @@
 @section('js')
     <script>
         var map, marker;
+        var lat = "{{ $harvest->latitude ?? -7.968376 }}";
+        var long = "{{ $harvest->longitude ?? '112.632354' }}";
 
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 12,
                 center: {
-                    lat: -7.968376,
-                    lng: 112.632354
+                    lat: parseFloat(lat),
+                    lng: parseFloat(long),
                 },
                 mapTypeId: 'hybrid',
                 streetViewControl: false,
             });
 
             marker = new google.maps.Marker({
-                position: new google.maps.LatLng(-7.968376, 112.632354),
+                position: new google.maps.LatLng(parseFloat(lat), parseFloat(long)),
                 map: map,
                 draggable: true,
             });

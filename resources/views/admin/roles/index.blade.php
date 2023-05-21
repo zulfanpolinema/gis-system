@@ -20,7 +20,6 @@
         <div class="card-header d-flex align-items-center">
             <div class="ml-auto">
                 <x-adminlte-button label="Add Role" theme="primary" icon="fas fa-plus" data-toggle="modal" data-target="#addRoleModal" />
-                <x-adminlte-button label="Add Permission" theme="primary" icon="fas fa-plus" data-toggle="modal" data-target="#addPermissionModal" />
             </div>
         </div>
         <div class="card-body">
