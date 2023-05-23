@@ -34,9 +34,42 @@
             </x-adminlte-datatable>
         </div>
     </div>
+    <x-adminlte-modal id="showLocationModal" title="Lokasi" size="lg">
+        <div id="map" style="height: 500px;" class="my-3"></div>
+        <a class="btn btn-xl btn-primary float-right" id="location" target="_blank">Arahkan melalui google maps</a>
+    </x-adminlte-modal>
 @endsection
 
 @section('js')
+    <script>
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 13,
+                mapTypeId: 'hybrid',
+                streetViewControl: false,
+            });
+
+            marker = new google.maps.Marker({
+                map: map,
+                draggable: false,
+            });
+        }
+
+        $(document).on('click', '#showLocation', function() {
+            var route = "{{ route('harvests.show', ':id') }}";
+            $.ajax({
+                url: route.replace(':id', $(this).data('id')),
+                type: "GET",
+                dataType: "JSON",
+                success: function(data) {
+                    map.setCenter(new google.maps.LatLng(parseFloat(data.latitude), parseFloat(data.longitude)));
+                    marker.setPosition(new google.maps.LatLng(parseFloat(data.latitude), parseFloat(data.longitude)));
+                    $('#location').attr('href', 'https://www.google.com/maps/dir/current+location/' + data.latitude + ',' + data.longitude);
+                }
+            })
+        });
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWDH7OEaIYZuJOD5dsXGerjcPf7IHCnGg&callback=initMap" defer type="text/javascript"></script>
     <script>
         $(document).on("click", "#deleteButton", function(e) {
             e.preventDefault();

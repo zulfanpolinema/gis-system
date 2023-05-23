@@ -57,7 +57,7 @@ class HarvestController extends Controller
                     return $item->full_address;
                 })
                 ->addColumn('coordinate', function ($item) {
-                    return $item->latitude . ', ' . $item->longitude;
+                    return '<a class="text-primary" id="showLocation" data-id="' . $item->id . '"  data-toggle="modal" data-target="#showLocationModal">' . $item->latitude . ', ' . $item->longitude . '</a>';
                 })
                 ->editColumn('status', function ($item) {
                     return config('data.harvest_status')[$item->status]['badge'];
@@ -66,10 +66,10 @@ class HarvestController extends Controller
                     return
                         '
                             <nobr>
-                            <a href="'. route('harvests.show', $item->id) .'" class="btn btn-xs btn-default text-info mx-1 shadow" title="Edit">
+                            <a href="' . route('harvests.show', $item->id) . '" class="btn btn-xs btn-default text-info mx-1 shadow" title="Edit">
                                 <i class="fa fa-lg fa-fw fa-eye"></i>
                             </a>
-                            <a href="'. route('harvests.edit', $item->id) .'" class="btn btn-xs btn-default text-primary mx-1 shadow" title="Edit">
+                            <a href="' . route('harvests.edit', $item->id) . '" class="btn btn-xs btn-default text-primary mx-1 shadow" title="Edit">
                                 <i class="fa fa-lg fa-fw fa-pen"></i>
                             </a>
                             <button class="btn btn-xs btn-default text-danger mx-1 shadow" title="Delete" id="deleteButton" data-id="' . $item->id . '">
@@ -78,7 +78,7 @@ class HarvestController extends Controller
                             </nobr>
                         ';
                 })
-                ->rawColumns(['gambar', 'status', 'actions'])
+                ->rawColumns(['coordinate', 'gambar', 'status', 'actions'])
                 ->addIndexColumn()
                 ->make();
         }
@@ -145,9 +145,12 @@ class HarvestController extends Controller
         }
     }
 
-    public function show(Harvest $harvest)
+    public function show($id)
     {
-        //
+        if (request()->ajax()) {
+            $harvest = Harvest::select('latitude', 'longitude')->find($id);
+            return response()->json($harvest, 200);
+        }
     }
 
     public function edit($id)
