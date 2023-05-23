@@ -23,6 +23,9 @@ class HarvestController extends Controller
         if (request()->ajax()) {
             $harvests = Harvest::with('user')->get();
             return DataTables::of($harvests)
+                ->addColumn('category', function ($item) {
+                    return $item->category->name;
+                })
                 ->addColumn('gambar', function ($item) {
                     $images = '';
                     foreach ($item->images as $key => $image) {
