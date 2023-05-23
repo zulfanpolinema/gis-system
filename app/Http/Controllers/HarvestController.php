@@ -66,12 +66,14 @@ class HarvestController extends Controller
                     return config('data.harvest_status')[$item->status]['badge'];
                 })
                 ->addColumn('actions', function ($item) {
-                    return
-                        '
+                    $buttons = '
                             <nobr>
                             <a href="' . route('harvests.show', $item->id) . '" class="btn btn-xs btn-default text-info mx-1 shadow" title="Edit">
                                 <i class="fa fa-lg fa-fw fa-eye"></i>
                             </a>
+                            ';
+                    if (auth()->user()->hasRole('Admin') || $item->user->id == auth()->user()->id) {
+                        $buttons .= '
                             <a href="' . route('harvests.edit', $item->id) . '" class="btn btn-xs btn-default text-primary mx-1 shadow" title="Edit">
                                 <i class="fa fa-lg fa-fw fa-pen"></i>
                             </a>
@@ -80,6 +82,8 @@ class HarvestController extends Controller
                             </button>
                             </nobr>
                         ';
+                    }
+                    return $buttons;
                 })
                 ->rawColumns(['coordinate', 'gambar', 'status', 'actions'])
                 ->addIndexColumn()
@@ -159,6 +163,10 @@ class HarvestController extends Controller
     public function edit($id)
     {
         $harvest = Harvest::find($id);
+        if (!auth()->user()->hasRole('Admin') && auth()->user()->id != $harvest->user->id) {
+            Session::flash('error', 'Data panen ini bukan milik anda!');
+            return redirect()->back();
+        }
         return view('admin.harvests.create', compact('harvest'));
     }
 
@@ -172,6 +180,9 @@ class HarvestController extends Controller
         DB::beginTransaction();
         try {
             $harvest = Harvest::findOrFail($id);
+            if (!auth()->user()->hasRole('Admin') && auth()->user()->id != $harvest->user->id) {
+                return response()->json(['message' => 'Data panen ini bukan milik anda!'], 500);
+            }
             foreach ($harvest->images as $image) {
                 Storage::disk('public')->delete($image->path);
                 $image->delete();

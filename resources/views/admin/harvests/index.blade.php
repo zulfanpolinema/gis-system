@@ -15,11 +15,11 @@
         'columns' => [['data' => 'DT_RowIndex'], ['data' => 'gambar', 'orderable' => false, 'searchable' => false], ['data' => 'pemilik'], ['data' => 'category'], ['data' => 'total'], ['data' => 'price'], ['data' => 'address', 'orderable' => false], ['data' => 'coordinate', 'orderable' => false], ['data' => 'status'], ['data' => 'actions', 'orderable' => false, 'searchable' => false, 'visible' => true]],
     ];
 @endphp
-@hasrole('Pengepul')
+{{-- @hasrole('Pengepul')
     @php
         $config['columns'][8]['visible'] = false;
     @endphp
-@endhasrole
+@endhasrole --}}
 @section('content')
     <div class="card">
         <div class="card-header d-flex align-items-center">
