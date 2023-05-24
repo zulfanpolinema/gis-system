@@ -58,7 +58,7 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <x-adminlte-textarea label="Alamat" name="address" placeholder="Masukkan alamat" required >
+                        <x-adminlte-textarea label="Alamat" name="address" placeholder="Masukkan alamat" required>
                             {{ $harvest->address ?? '' }}
                         </x-adminlte-textarea>
                     </div>
@@ -93,6 +93,11 @@
                                 <option value="{{ $harvest->village->id }}" selected>{{ ucwords(strtolower($harvest->village->name)) }}</option>
                             @endif
                         </x-adminlte-select2>
+                    </div>
+                </div>
+                <div class="row mt-3" id="getLocationWrapper" style="display: none">
+                    <div class="col d-flex justify-content-center">
+                        <x-adminlte-button id="getLocation" label="Cari lokasi saya" theme="primary" icon="fa fa-location-arrow" />
                     </div>
                 </div>
                 <div class="row">
@@ -205,6 +210,39 @@
                 $('#longitude').val(marker.getPosition().lng());
             });
         }
+
+        $(function() {
+            if (window.location.protocol === "https:") {
+                $('#getLocationWrapper').show();
+            } else {
+                $('#getLocationWrapper').hide();
+            }
+        });
+
+        function getCurrentPosition() {
+            return new Promise(function(resolve, reject) {
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: true
+                });
+            });
+        }
+
+        $('#getLocation').on('click', function() {
+            getCurrentPosition().then(function(position) {
+                    var pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    map.setZoom(17);
+                    map.setCenter(pos);
+                    marker.setAnimation(google.maps.Animation.DROP);
+                    marker.setPosition(pos);
+                })
+                .catch(function(error) {
+                    console.error(error);
+                });
+        });
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWDH7OEaIYZuJOD5dsXGerjcPf7IHCnGg&callback=initMap" defer type="text/javascript"></script>
     @hasrole('Admin')
@@ -422,26 +460,40 @@
 
         $('#addHarvestForm').on('submit', function(e) {
             e.preventDefault();
-            $('#btnSubmit').attr('disabled', true);
-            $.ajax({
-                url: "{{ route('harvests.store') }}",
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            Swal.fire({
+                customClass: {
+                    confirmButton: 'bg-primary',
                 },
-                type: "POST",
-                dataType: "JSON",
-                processData: false,
-                contentType: false,
-                cache: false,
-                data: new FormData(this),
-                error: function(data) {
-                    toastr.error(data.responseJSON.message, 'Error');
-                },
-                success: function(data) {
-                    window.location.assign(data.message);
+                title: 'Periksa kembali data anda',
+                text: "Apakah anda yakin ingin menyimpan data ini?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#btnSubmit').attr('disabled', true);
+                    $.ajax({
+                        url: "{{ route('harvests.store') }}",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type: "POST",
+                        dataType: "JSON",
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                        data: new FormData(this),
+                        error: function(data) {
+                            toastr.error(data.responseJSON.message, 'Error');
+                        },
+                        success: function(data) {
+                            window.location.assign(data.message);
+                        }
+                    });
+                    $('#btnSubmit').removeAttr('disabled');
                 }
             });
-            $('#btnSubmit').removeAttr('disabled');
+
         });
     </script>
 @endsection
