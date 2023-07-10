@@ -65,6 +65,21 @@ class HarvestController extends Controller
                 ->editColumn('status', function ($item) {
                     return config('data.harvest_status')[$item->status]['badge'];
                 })
+                ->editColumn('phonenumber', function ($item) {
+                    if ($item->phonenumber) {
+                        $phonenumber = $item->phonenumber;
+                        if ($phonenumber[0] == "0") {
+                            $phonenumber = substr($phonenumber, 1);
+                        }
+
+                        if ($phonenumber[0] == "8") {
+                            $phonenumber = "62" . $phonenumber;
+                        }
+                        return '<a href="https://wa.me/' . $phonenumber . '" target="_blank">' . $item->phonenumber . '</a>';
+                    } else {
+                        return '-';
+                    }
+                })
                 ->addColumn('actions', function ($item) {
                     $buttons = '
                             <nobr>
@@ -85,7 +100,7 @@ class HarvestController extends Controller
                     }
                     return $buttons;
                 })
-                ->rawColumns(['coordinate', 'gambar', 'status', 'actions'])
+                ->rawColumns(['coordinate', 'gambar', 'status', 'phonenumber', 'actions'])
                 ->addIndexColumn()
                 ->make();
         }
@@ -123,6 +138,7 @@ class HarvestController extends Controller
                 'address'       => 'required',
                 'latitude'      => 'required',
                 'longitude'     => 'required',
+                'phonenumber'   => 'required',
             ]);
 
             $harvest = Harvest::create([
@@ -134,6 +150,7 @@ class HarvestController extends Controller
                 'address'   => $request->address,
                 'longitude' => $request->longitude,
                 'latitude'  => $request->latitude,
+                'phonenumber'   => $request->phonenumber,
                 'status'    => 1,
             ]);
 

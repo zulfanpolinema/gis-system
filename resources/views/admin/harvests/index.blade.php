@@ -6,13 +6,13 @@
 @section('plugins.Datatables', true)
 
 @php
-    $heads = [['label' => 'No', 'width' => 2], 'Gambar', 'Pemilik', 'Kategori', 'Total Panen (Kg)', 'Harga/Kg', 'Alamat', 'Koordinat', 'Status', ['label' => 'Actions', 'width' => 5]];
+    $heads = [['label' => 'No', 'width' => 2], 'Gambar', 'Pemilik', 'Kategori', 'Total Panen (Kg)', 'Harga/Kg', 'Alamat', 'Koordinat', 'No. HP / WA', ['label' => 'Actions', 'width' => 5]];
     $config = [
         'serverSide' => true,
         'processing' => true,
         'ajax' => ['url' => route('harvests.index')],
         'order' => [[0, 'asc']],
-        'columns' => [['data' => 'DT_RowIndex'], ['data' => 'gambar', 'orderable' => false, 'searchable' => false], ['data' => 'pemilik'], ['data' => 'category'], ['data' => 'total'], ['data' => 'price'], ['data' => 'address', 'orderable' => false], ['data' => 'coordinate', 'orderable' => false], ['data' => 'status'], ['data' => 'actions', 'orderable' => false, 'searchable' => false, 'visible' => true]],
+        'columns' => [['data' => 'DT_RowIndex'], ['data' => 'gambar', 'orderable' => false, 'searchable' => false], ['data' => 'pemilik'], ['data' => 'category'], ['data' => 'total'], ['data' => 'price'], ['data' => 'address', 'orderable' => false], ['data' => 'coordinate', 'orderable' => false], ['data' => 'phonenumber'], ['data' => 'actions', 'orderable' => false, 'searchable' => false, 'visible' => true]],
     ];
 @endphp
 {{-- @hasrole('Pengepul')

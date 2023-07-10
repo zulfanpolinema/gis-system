@@ -58,6 +58,11 @@
                 </div>
                 <div class="row">
                     <div class="col">
+                        <x-adminlte-input name="phonenumber" label="No. HP / WA" placeholder="No. HP / WA (08xxx)" value="{{ $harvest->phonenumber ?? '' }}" required/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
                         <x-adminlte-textarea label="Alamat" name="address" placeholder="Masukkan alamat" required>
                             {{ $harvest->address ?? '' }}
                         </x-adminlte-textarea>
