@@ -187,9 +187,32 @@ class HarvestController extends Controller
         return view('admin.harvests.create', compact('harvest'));
     }
 
-    public function update(Request $request, Harvest $harvest)
+    public function update(Request $request, $id)
     {
-        //
+        $this->middleware('role:Admin|Petani');
+        DB::beginTransaction();
+        try {
+            $harvest = Harvest::find($id);
+            $harvest->update([
+                'user_id'               => $request->user_id ?? $harvest->user_id,
+                'category_id'           => $request->category_id ?? $harvest->category_id,
+                'indonesia_village_id'  => $request->village_id ?? $harvest->indonesia_village_id,
+                'total'                 => $request->total ?? $harvest->total,
+                'price'                 => $request->price ?? $harvest->price,
+                'address'               => $request->address ?? $harvest->address,
+                'longitude'             => $request->longitude ?? $harvest->longitude,
+                'latitude'              => $request->latitude ?? $harvest->latitude,
+                'phonenumber'           => $request->phonenumber ?? $harvest->latitude,
+                'status'                => $harvest->status,
+            ]);
+
+            DB::commit();
+            Session::flash('success', 'Data berhasil disimpan!');
+            return response()->json(['message' => route('harvests.index')], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
     }
 
     public function destroy($id)
