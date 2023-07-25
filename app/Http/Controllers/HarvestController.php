@@ -82,10 +82,7 @@ class HarvestController extends Controller
                 })
                 ->addColumn('actions', function ($item) {
                     $buttons = '
-                            <nobr>
-                            <a href="' . route('harvests.show', $item->id) . '" class="btn btn-xs btn-default text-info mx-1 shadow" title="Edit">
-                                <i class="fa fa-lg fa-fw fa-eye"></i>
-                            </a>
+
                             ';
                     if (auth()->user()->hasRole('Admin') || $item->user->id == auth()->user()->id) {
                         $buttons .= '
