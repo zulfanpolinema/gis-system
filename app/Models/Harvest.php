@@ -19,8 +19,10 @@ class Harvest extends Model
         'address',
         'longitude',
         'latitude',
-        'status',
-        'phonenumber'
+        'phonenumber',
+        'retail_price',
+        'retail_minimum',
+        'harvest_month',
     ];
 
     public function user() {
@@ -42,5 +44,9 @@ class Harvest extends Model
 
     public function images(){
         return $this->hasMany(HarvestImage::class, 'harvest_id', 'id');
+    }
+
+    public function transactions(){
+        return $this->hasMany(Transaction::class, 'harvest_id', 'id');
     }
 }

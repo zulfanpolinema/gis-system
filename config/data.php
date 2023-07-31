@@ -1,18 +1,22 @@
 <?php
 
 return [
-    'harvest_status' => [
+    'transaction_status' => [
         '1' => [
-            'label' => 'Status 1',
-            'badge' => '<span class="badge badge-info">Status 1</span>'
+            'label' => 'Proses Pengajuan',
+            'badge' => '<span class="badge badge-info">Proses Pengajuan</span>'
         ],
         '2' => [
-            'label' => 'Proses Penjualan',
-            'badge' => '<span class="badge badge-primary">Proses Penjualan</span>'
+            'label' => 'Penjualan Disetujui',
+            'badge' => '<span class="badge badge-primary">Penjualan Disetujui</span>'
         ],
         '3' => [
             'label' => 'Terjual',
             'badge' => '<span class="badge badge-success">Terjual</span>'
+        ],
+        '4' => [
+            'label' => 'Dibatalkan',
+            'badge' => '<span class="badge badge-success">Penjualan Dibatalkan</span>'
         ],
     ],
 ];

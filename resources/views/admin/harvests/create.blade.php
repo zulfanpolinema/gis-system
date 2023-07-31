@@ -45,6 +45,16 @@
                         </x-adminlte-input>
                     </div>
                     <div class="col-xl-6">
+                        <x-adminlte-select2 name="harvest_month" label="Bulan Panen" data-placeholder="Pilih bulan panen" required>
+                            <option value=""></option>
+                            @for ($i = 1; $i <= 12; $i++)
+                                <option value="{{ $i }}" {{ isset($harvest) && $harvest->harvest_month == $i ? 'selected' : '' }}>{{ \Carbon\Carbon::create(null, $i, 1)->monthName }}</option>
+                            @endfor
+                        </x-adminlte-select2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-4">
                         <x-adminlte-input name="price" label="Harga per Kg" placeholder="Harga per kg" value="{{ $harvest->price ?? '' }}" required>
                             <x-slot name="prependSlot">
                                 <div class="input-group-text">
@@ -54,6 +64,29 @@
                             <x-slot name="appendSlot">
                                 <div class="input-group-text">
                                     /Kg
+                                </div>
+                            </x-slot>
+                        </x-adminlte-input>
+                    </div>
+                    <div class="col-xl-4">
+                        <x-adminlte-input name="retail_price" label="Harga grosir per kg" placeholder="Harga grosir per kg" value="{{ $harvest->retail_price ?? '' }}" required>
+                            <x-slot name="prependSlot">
+                                <div class="input-group-text">
+                                    Rp
+                                </div>
+                            </x-slot>
+                            <x-slot name="appendSlot">
+                                <div class="input-group-text">
+                                    /Kg
+                                </div>
+                            </x-slot>
+                        </x-adminlte-input>
+                    </div>
+                    <div class="col-xl-4">
+                        <x-adminlte-input name="retail_minimum" label="Jumlah minimum grosir" placeholder="Jumlah minimum grosir" value="{{ $harvest->retail_minimum ?? '' }}" required>
+                            <x-slot name="appendSlot">
+                                <div class="input-group-text">
+                                    Kg
                                 </div>
                             </x-slot>
                         </x-adminlte-input>

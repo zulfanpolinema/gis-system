@@ -54,16 +54,14 @@ class HarvestController extends Controller
                     return number_format(intval($item->total), 0, ',', '.');
                 })
                 ->editColumn('price', function ($item) {
-                    return 'Rp ' . number_format(intval($item->price), 0, ',', '.');
+                    return 'Ecer : Rp ' . number_format(intval($item->price), 0, ',', '.')
+                    . '<br> Grosir : Rp ' . number_format(intval($item->retail_price), 0, ',', '.');
                 })
                 ->editColumn('address', function ($item) {
                     return $item->full_address;
                 })
                 ->addColumn('coordinate', function ($item) {
                     return '<a class="text-primary" id="showLocation" data-id="' . $item->id . '"  data-toggle="modal" data-target="#showLocationModal">' . $item->latitude . ', ' . $item->longitude . '</a>';
-                })
-                ->editColumn('status', function ($item) {
-                    return config('data.harvest_status')[$item->status]['badge'];
                 })
                 ->editColumn('phonenumber', function ($item) {
                     if ($item->phonenumber) {
@@ -82,7 +80,9 @@ class HarvestController extends Controller
                 })
                 ->addColumn('actions', function ($item) {
                     $buttons = '
-
+                            <button class="btn btn-xs btn-default text-success mx-1 shadow" title="Order" id="addTransactionButton" data-id="' . $item->id . '" data-toggle="modal" data-target="#addTransactionModal" data-price="'. $item->price .'" data-retail_minimum="'. $item->retail_minimum .'" data-retail_price="'. $item->retail_price .'">
+                                <i class="fa fa-lg fa-fw fa-shopping-cart"></i>
+                            </button>
                             ';
                     if (auth()->user()->hasRole('Admin') || $item->user->id == auth()->user()->id) {
                         $buttons .= '
@@ -97,7 +97,7 @@ class HarvestController extends Controller
                     }
                     return $buttons;
                 })
-                ->rawColumns(['coordinate', 'gambar', 'status', 'phonenumber', 'actions'])
+                ->rawColumns(['coordinate', 'gambar', 'price', 'phonenumber', 'actions'])
                 ->addIndexColumn()
                 ->make();
         }
@@ -128,14 +128,17 @@ class HarvestController extends Controller
                 $request->validate(['user_id' => 'required']);
             }
             $request->validate([
-                'category_id'   => 'required',
-                'village_id'    => 'required',
-                'total'         => 'required',
-                'price'         => 'required',
-                'address'       => 'required',
-                'latitude'      => 'required',
-                'longitude'     => 'required',
-                'phonenumber'   => 'required',
+                'category_id'       => 'required',
+                'village_id'        => 'required',
+                'total'             => 'required',
+                'price'             => 'required',
+                'address'           => 'required',
+                'latitude'          => 'required',
+                'longitude'         => 'required',
+                'phonenumber'       => 'required',
+                'retail_price'      => 'required',
+                'retail_minimum'    => 'required',
+                'harvest_month'     => 'required',
             ]);
 
             $harvest = Harvest::create([
@@ -148,7 +151,9 @@ class HarvestController extends Controller
                 'longitude' => $request->longitude,
                 'latitude'  => $request->latitude,
                 'phonenumber'   => $request->phonenumber,
-                'status'    => 1,
+                'retail_price'  => $request->retail_price,
+                'retail_minimum'  => $request->retail_minimum,
+                'harvest_month'  => $request->harvest_month,
             ]);
 
             foreach ($request->input('gambar', []) as $path) {
@@ -200,7 +205,9 @@ class HarvestController extends Controller
                 'longitude'             => $request->longitude ?? $harvest->longitude,
                 'latitude'              => $request->latitude ?? $harvest->latitude,
                 'phonenumber'           => $request->phonenumber ?? $harvest->latitude,
-                'status'                => $harvest->status,
+                'retail_price'          => $request->retail_price ?? $harvest->retail_price,
+                'retail_minimum'        => $request->retail_minimum ?? $harvest->retail_minimum,
+                'harvest_month'         => $request->harvest_month ?? $harvest->harvest_month,
             ]);
 
             DB::commit();

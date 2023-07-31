@@ -6,7 +6,7 @@
 @section('plugins.Datatables', true)
 
 @php
-    $heads = [['label' => 'No', 'width' => 2], 'Gambar', 'Pemilik', 'Kategori', 'Total Panen (Kg)', 'Harga/Kg', 'Alamat', 'Koordinat', 'No. HP / WA', ['label' => 'Actions', 'width' => 5]];
+    $heads = [['label' => 'No', 'width' => 2], 'Gambar', 'Pemilik', 'Kategori', 'Total Panen (Kg)', 'Harga/Kg', 'Alamat', 'Koordinat', 'No. HP / WA', 'Actions'];
     $config = [
         'serverSide' => true,
         'processing' => true,
@@ -38,6 +38,7 @@
         <div id="map" style="height: 500px;" class="my-3"></div>
         <a class="btn btn-xl btn-primary float-right" id="location" target="_blank">Arahkan melalui google maps</a>
     </x-adminlte-modal>
+    @include('admin.harvests.orderModal')
 @endsection
 
 @section('js')

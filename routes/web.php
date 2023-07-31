@@ -5,6 +5,7 @@ use App\Http\Controllers\DropdownController;
 use App\Http\Controllers\HarvestController;
 use App\Http\Controllers\HarvestImageController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,12 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('harvests', HarvestController::class);
     Route::resource('harvests/images', HarvestImageController::class);
+    Route::prefix('transactions')->group(function () {
+        Route::get('accept/{id}', [TransactionController::class, 'accept'])->name('transactions.accept');
+        Route::get('cancel/{id}', [TransactionController::class, 'cancel'])->name('transactions.cancel');
+        Route::get('done/{id}', [TransactionController::class, 'done'])->name('transactions.done');
+    });
+    Route::resource('transactions', TransactionController::class);
 });
 
 

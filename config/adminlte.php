@@ -311,6 +311,11 @@ return [
             'icon' => 'fas fa-fw fa-list-ul',
             'can' => 'manage categories',
         ],
+        [
+            'text' => 'Data Transaksi',
+            'route' => 'transactions.index',
+            'icon' => 'fas fa-fw fa-shopping-cart',
+        ],
         // Sidebar items:
         [
             'header' => 'Master Data',
