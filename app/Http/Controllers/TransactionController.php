@@ -104,7 +104,7 @@ class TransactionController extends Controller
                 'user_id' => auth()->user()->id,
                 'harvest_id' => $request->harvest_id,
                 'amount' => $request->amount,
-                'total' => str_replace($request->total, '.', ''),
+                'total' => str_replace('.', '', $request->total),
                 'status' => 1,
             ]);
 
