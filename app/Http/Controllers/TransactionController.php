@@ -137,7 +137,7 @@ class TransactionController extends Controller
     public function accept($id)
     {
         $transaction = Transaction::findOrFail($id);
-        if ($transaction->harvest->user->id != auth()->user()->id || !auth()->user()->hasRole('Admin')) {
+        if ($transaction->harvest->user->id != auth()->user()->id || auth()->user()->hasRole('Admin')) {
             return redirect()->back()->with('error', 'Data panen bukan milik anda!');
         }
         if ($transaction->status == 1) {
@@ -157,7 +157,7 @@ class TransactionController extends Controller
     public function cancel($id)
     {
         $transaction = Transaction::findOrFail($id);
-        if ($transaction->harvest->user->id != auth()->user()->id || !auth()->user()->hasRole('Admin')) {
+        if ($transaction->harvest->user->id != auth()->user()->id || auth()->user()->hasRole('Admin')) {
             return redirect()->back()->with('error', 'Data panen bukan milik anda!');
         }
         if ($transaction->status == 1) {
@@ -173,7 +173,7 @@ class TransactionController extends Controller
     public function done($id)
     {
         $transaction = Transaction::findOrFail($id);
-        if ($transaction->harvest->user->id != auth()->user()->id || !auth()->user()->hasRole('Admin')) {
+        if ($transaction->harvest->user->id != auth()->user()->id || auth()->user()->hasRole('Admin')) {
             return redirect()->back()->with('error', 'Data panen bukan milik anda!');
         }
         if ($transaction->status == 2) {
