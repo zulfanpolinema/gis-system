@@ -20,7 +20,7 @@
             </x-slot>
         </x-adminlte-input>
         <x-slot name="footerSlot">
-            <x-adminlte-button theme="primary" label="Simpan" type="submit"/>
+            <x-adminlte-button theme="primary" label="Simpan" type="submit" />
             <x-adminlte-button theme="default" label="Batalkan" data-dismiss="modal" />
         </x-slot>
     </x-adminlte-modal>
@@ -53,21 +53,34 @@
 
         $('#addTransaction').on('submit', function(e) {
             e.preventDefault();
-            $.ajax({
-                url: "{{ route('transactions.store') }}",
-                method: "POST",
-                dataType: "JSON",
-                processData: false,
-                contentType: false,
-                cache: false,
-                data: new FormData(this),
-                success: function(data) {
-                    $('#addTransactionModal').modal('hide');
-                    $('#transactionForm').trigger('reset');
-                    toastr.success(data.message, 'Sukses');
+            Swal.fire({
+                customClass: {
+                    confirmButton: 'bg-primary',
                 },
-                error: function(data) {
-                    toastr.error(data.responseJSON.message, 'Error');
+                title: 'Apakah anda yakin?',
+                text: "Apakah anda yakin ingin melakukan pembelian panen ini?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Delete'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('transactions.store') }}",
+                        method: "POST",
+                        dataType: "JSON",
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                        data: new FormData(this),
+                        success: function(data) {
+                            $('#addTransactionModal').modal('hide');
+                            $('#transactionForm').trigger('reset');
+                            toastr.success(data.message, 'Sukses');
+                        },
+                        error: function(data) {
+                            toastr.error(data.responseJSON.message, 'Error');
+                        }
+                    });
                 }
             });
         });
