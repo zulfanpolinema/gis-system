@@ -38,15 +38,15 @@
         });
 
         $('#amount').on('input', function() {
-            let amount = $(this).val();
-            let price = $('#price').val();
-            let retail_price = $('#retail_price').val();
-            let retail_minimum = $('#retail_minimum').val();
-            let total = 0;
-            if (retail_price != 0 && amount >= retail_minimum) {
-                total = amount * retail_price;
-            } else {
+            var amount = parseInt($(this).val());
+            var price = parseInt($('#price').val());
+            var retail_price = parseInt($('#retail_price').val());
+            var retail_minimum = parseInt($('#retail_minimum').val());
+            var total = 0;
+            if (amount < retail_minimum) {
                 total = amount * price;
+            } else if (amount >= retail_minimum) {
+                total = amount * retail_price;
             }
             $('#total').val(total.toLocaleString('id-ID'));
         });
