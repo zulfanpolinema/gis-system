@@ -16,7 +16,7 @@ return [
         ],
         '4' => [
             'label' => 'Dibatalkan',
-            'badge' => '<span class="badge badge-success">Penjualan Dibatalkan</span>'
+            'badge' => '<span class="badge badge-danger">Penjualan Dibatalkan</span>'
         ],
     ],
 ];

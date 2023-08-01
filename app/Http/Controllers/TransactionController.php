@@ -22,7 +22,13 @@ class TransactionController extends Controller
                 ->get();
             return DataTables::of($transactions)
                 ->addColumn('pemilik', function ($item) {
-                    return $item->harvest->user->name;
+                    if (auth()->user()->hasRole('Petani')) {
+                        return $item->user->name;
+                    } else if (auth()->user()->hasRole('Pengepul')) {
+                        return $item->harvest->user->name;
+                    } else {
+                        return 'Petani : ' . $item->harvest->user->name . '<br>Pengepul : ' . $item->user->name;
+                    }
                 })
                 ->addColumn('category', function ($item) {
                     return $item->harvest->category->name;
@@ -72,14 +78,19 @@ class TransactionController extends Controller
                             return '-';
                         }
                     } else {
-                        return '
+                        if ($item->status == 1) {
+                            return '
                                 <button class="btn btn-xs btn-default text-primary mx-1 shadow" title="Edit" id="editTransactionButton" data-id="' . $item->id . '" data-toggle="modal" data-target="#editTransactionModal">
                                     <i class="fa fa-lg fa-fw fa-pen"></i>
                                 </button>
                                 ';
+                        } else {
+                            return '-';
+                        }
+
                     }
                 })
-                ->rawColumns(['phonenumber', 'status', 'actions'])
+                ->rawColumns(['pemilik', 'phonenumber', 'status', 'actions'])
                 ->addIndexColumn()
                 ->make();
         }
