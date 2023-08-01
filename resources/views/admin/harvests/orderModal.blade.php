@@ -74,7 +74,7 @@
                         data: new FormData(this),
                         success: function(data) {
                             $('#addTransactionModal').modal('hide');
-                            $('#transactionForm').trigger('reset');
+                            $('#addTransaction').trigger('reset');
                             toastr.success(data.message, 'Sukses');
                         },
                         error: function(data) {
