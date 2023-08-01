@@ -73,9 +73,9 @@ class TransactionController extends Controller
                         }
                     } else {
                         return '
-                                <a href="' . route('transactions.edit', $item->id) . '" class="btn btn-xs btn-default text-primary mx-1 shadow" title="Edit">
+                                <button class="btn btn-xs btn-default text-primary mx-1 shadow" title="Edit" id="editTransactionButton" data-id="' . $item->id . '" data-toggle="modal" data-target="#editTransactionModal">
                                     <i class="fa fa-lg fa-fw fa-pen"></i>
-                                </a>
+                                </button>
                                 ';
                     }
                 })
@@ -119,14 +119,35 @@ class TransactionController extends Controller
         //
     }
 
-    public function edit(Transaction $transaction)
+    public function edit($id)
     {
-        //
+        try {
+            $transaction = Transaction::with('harvest')->findOrFail($id);
+            return response()->json($transaction, 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
     }
 
-    public function update(Request $request, Transaction $transaction)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $transaction = Transaction::findOrFail($id);
+            $harvest = $transaction->harvest;
+            $harvest->update([
+                'total' => $harvest->total + $transaction->amount,
+            ]);
+            $transaction->update([
+                'amount' => $request->amount ?? $transaction->amount,
+                'total' => str_replace('.', '', $request->total) ?? $transaction->total,
+            ]);
+            $harvest->update([
+                'total' => $harvest->total - $transaction->amount,
+            ]);
+            return response()->json(['message' => 'Data berhasil diubah!'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
     }
 
     public function destroy(Transaction $transaction)

@@ -63,7 +63,7 @@ return [
     |
     */
 
-    'logo' => '<b>GIS</b> 2023',
+    'logo' => '<b>Sistem</b> Penjualan',
     'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => false,

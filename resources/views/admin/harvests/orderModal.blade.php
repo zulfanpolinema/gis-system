@@ -43,10 +43,10 @@
             var retail_price = parseInt($('#retail_price').val());
             var retail_minimum = parseInt($('#retail_minimum').val());
             var total = 0;
-            if (amount < retail_minimum) {
-                total = amount * price;
-            } else if (amount >= retail_minimum) {
+            if (retail_price != 0 && amount >= retail_minimum) {
                 total = amount * retail_price;
+            } else {
+                total = amount * price;
             }
             $('#total').val(total.toLocaleString('id-ID'));
         });
@@ -61,7 +61,7 @@
                 text: "Apakah anda yakin ingin melakukan pembelian panen ini?",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Delete'
+                confirmButtonText: 'Ya'
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({

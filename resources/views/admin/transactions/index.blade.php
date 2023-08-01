@@ -15,23 +15,19 @@
         'columns' => [['data' => 'DT_RowIndex'], ['data' => 'pemilik'], ['data' => 'category'], ['data' => 'amount'], ['data' => 'total'], ['data' => 'phonenumber'], ['data' => 'status'], ['data' => 'actions', 'orderable' => false, 'searchable' => false, 'visible' => true]],
     ];
 @endphp
-{{-- @hasrole('Pengepul')
+@hasrole('Admin')
     @php
-        $config['columns'][8]['visible'] = false;
+        $config['columns'][7]['visible'] = false;
     @endphp
-@endhasrole --}}
+@endhasrole
 @section('content')
     <div class="card">
         <div class="card-header d-flex align-items-center">
         </div>
         <div class="card-body">
-            <x-adminlte-datatable id="table-harvests" :heads="$heads" :config="$config" striped hoverable>
+            <x-adminlte-datatable id="transactionsTable" :heads="$heads" :config="$config" striped hoverable>
             </x-adminlte-datatable>
         </div>
     </div>
-    <x-adminlte-modal id="showLocationModal" title="Lokasi" size="lg">
-        <div id="map" style="height: 500px;" class="my-3"></div>
-        <a class="btn btn-xl btn-primary float-right" id="location" target="_blank">Arahkan melalui google maps</a>
-    </x-adminlte-modal>
-    @include('admin.harvests.orderModal')
+    @include('admin.transactions.updateModal')
 @endsection
